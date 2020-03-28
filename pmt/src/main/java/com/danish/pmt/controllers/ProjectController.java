@@ -2,6 +2,7 @@ package com.danish.pmt.controllers;
 
 import com.danish.pmt.domain.Project;
 import com.danish.pmt.services.ProjectService;
+import com.danish.pmt.services.ValidationErrorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,17 +24,14 @@ public class ProjectController {
     @Autowired
     private ProjectService projectService;
 
+    @Autowired
+    private ValidationErrorService validationService;
+
     @PostMapping
     public ResponseEntity<?> createNewProject(@Valid @RequestBody Project project, BindingResult result){
 
-        if(result.hasErrors()) {
-            Map<String, String> errorMap = new HashMap<>();
-
-            for(FieldError error: result.getFieldErrors()){
-                errorMap.put(error.getField(), error.getDefaultMessage());
-            }
-            return new ResponseEntity<Map<String, String>>(errorMap, HttpStatus.BAD_REQUEST);
-        }
+        ResponseEntity<Map<String,  String>> error = validationService.Validate(result);
+        if(error!=null) return error;
 
         projectService.saveOrUpdateProject(project);
         return new ResponseEntity<Project>(project, HttpStatus.CREATED);
