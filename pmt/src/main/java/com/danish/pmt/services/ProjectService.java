@@ -12,13 +12,20 @@ public class ProjectService {
     private ProjectRepository projectRepository;
 
     public Project saveOrUpdateProject(Project project){
-    try{
-        project.setProjectIdentifier(project.getProjectIdentifier().toUpperCase());
-        return projectRepository.save(project);
-    } catch(Exception ex) {
-      throw new ProjectIdException("Project Identifier '" + project.getProjectIdentifier().toUpperCase()+ "' already exists");
+        try{
+            project.setProjectIdentifier(project.getProjectIdentifier().toUpperCase());
+            return projectRepository.save(project);
+        } catch(Exception ex) {
+          throw new ProjectIdException("Project Identifier '" + project.getProjectIdentifier().toUpperCase()+ "' already exists");
+        }
     }
 
+    public Project findProjectByIdentifier(String Identifier){
+        Project project = projectRepository.findByProjectIdentifier(Identifier.toUpperCase());
 
+        if(project == null){
+            throw new RuntimeException("Project with Identifier '" + Identifier + "' Not found");
+        }
+        return project;
     }
 }
