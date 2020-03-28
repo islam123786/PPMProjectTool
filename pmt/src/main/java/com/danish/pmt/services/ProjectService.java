@@ -1,6 +1,7 @@
 package com.danish.pmt.services;
 
 import com.danish.pmt.domain.Project;
+import com.danish.pmt.exceptions.ProjectIdException;
 import com.danish.pmt.repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,9 +12,13 @@ public class ProjectService {
     private ProjectRepository projectRepository;
 
     public Project saveOrUpdateProject(Project project){
-
-        //Logic
-
+    try{
+        project.setProjectIdentifier(project.getProjectIdentifier().toUpperCase());
         return projectRepository.save(project);
+    } catch(Exception ex) {
+      throw new ProjectIdException("Project Identifier '" + project.getProjectIdentifier().toUpperCase()+ "' already exists");
+    }
+
+
     }
 }
